@@ -2,20 +2,20 @@
 
 import asyncio
 
-async def simulation_loop(simulator, interval):
-    """
-    Bucle que actualiza periódicamente la simulación.
-    """
+async def mover_vehiculo(v, city, intervalo=0.5):
     while True:
-        simulator.update()
-        await asyncio.sleep(interval)
+        v.mover(city)
+        await asyncio.sleep(intervalo)
 
-def run_simulation_tasks(simulator, update_interval=1.0):
-    """
-    Crea y devuelve una lista de tareas asíncronas necesarias para la simulación:
-    - Bucle de actualización de la ciudad
-    - En un caso complejo, aquí se podrían añadir más tareas.
-    """
+async def cambiar_semaforo(s, intervalo=5):
+    while True:
+        s.cambiar_estado()
+        await asyncio.sleep(intervalo)
+
+def run_simulation_tasks(simulator, update_interval=0.5):
     tasks = []
-    tasks.append(asyncio.create_task(simulation_loop(simulator, update_interval)))
+    for v in simulator.city.vehicles:
+        tasks.append(asyncio.create_task(mover_vehiculo(v, simulator.city, update_interval)))
+    for s in simulator.city.traffic_lights:
+        tasks.append(asyncio.create_task(cambiar_semaforo(s)))
     return tasks

@@ -1,33 +1,37 @@
 # simulacion_trafico/environment/vehicle.py
 
 class Vehicle:
-    """
-    Clase que modela el comportamiento básico de un vehículo.
-    """
-    def __init__(self, id_, position=(0, 0), speed=0.0, direction="NORTE"):
-        self.id_ = id_
-        self.position = position
+    def __init__(self, id_, position, speed, direction):
+        self.id = id_
+        self.position = list(position)
         self.speed = speed
         self.direction = direction
+        self.en_espera = False  # Si está esperando por semáforo
 
-    def move(self):
-        """
-        Actualiza la posición del vehículo en función de su dirección y velocidad.
-        Aquí se usa un modelo muy simplificado; en un motor real se realizarían
-        cálculos de física, detección de colisiones, etc.
-        """
-        x, y = self.position
+    def mover(self, city):
+        if self.debe_detenserse(city):
+            self.en_espera = True
+            return
 
+        self.en_espera = False
         if self.direction == "NORTE":
-            y += self.speed
+            self.position[1] -= self.speed
         elif self.direction == "SUR":
-            y -= self.speed
+            self.position[1] += self.speed
         elif self.direction == "ESTE":
-            x += self.speed
+            self.position[0] += self.speed
         elif self.direction == "OESTE":
-            x -= self.speed
+            self.position[0] -= self.speed
 
-        self.position = (x, y)
+    def debe_detenserse(self, city):
+        for interseccion in city.intersecciones:
+            semaforo = interseccion.semaforo
+            if not semaforo:
+                continue
+            x, y = self.position
+            sx, sy = semaforo.position
 
-    def __str__(self):
-        return f"Vehicle {self.id_} at position {self.position}, speed {self.speed}, direction {self.direction}"
+            distancia = ((x - sx) ** 2 + (y - sy) ** 2) ** 0.5
+            if distancia < 2.0 and semaforo.state != "verde":
+                return True
+        return False

@@ -1,20 +1,24 @@
 # simulacion_trafico/environment/city.py
 
-class City:
-    """
-    Clase que representa la ciudad que contiene semáforos, vehículos y
-    cualquier otro elemento urbano (calles, intersecciones, etc.).
-    """
-    def __init__(self, name: str):
-        self.name = name
-        self.traffic_lights = []
-        self.vehicles = []
+from environment.Calle import Calle
+from environment.Interseccion import Interseccion
 
-    def add_traffic_light(self, traffic_light):
-        self.traffic_lights.append(traffic_light)
+class City:
+    def __init__(self, name):
+        self.name = name
+        self.calles = []
+        self.intersecciones = []
+        self.vehicles = []
+        self.traffic_lights = []
+
+    def add_calle(self, calle):
+        self.calles.append(calle)
+
+    def add_interseccion(self, interseccion):
+        self.intersecciones.append(interseccion)
 
     def add_vehicle(self, vehicle):
         self.vehicles.append(vehicle)
 
-    def __str__(self):
-        return f"City: {self.name}, TrafficLights: {len(self.traffic_lights)}, Vehicles: {len(self.vehicles)}"
+    def add_traffic_light(self, traffic_light):
+        self.traffic_lights.append(traffic_light)
